@@ -1,6 +1,8 @@
 import pytest
+
 import math_operations
-from math_operations import fibonacci, fibonacci_sequence, fibonacci_with_info, get_implementation
+from math_operations import (fibonacci, fibonacci_sequence,
+                             fibonacci_with_info, get_implementation)
 
 
 class TestFibonacci:
@@ -21,14 +23,14 @@ class TestFibonacci:
             (40, 102334155),
             (50, 12586269025),
         ]
-        
+
         for n, expected in known_values:
             assert fibonacci(n) == expected, f"fibonacci({n}) should equal {expected}"
 
     def test_negative_input(self):
         with pytest.raises(ValueError, match="n must be a non-negative integer"):
             fibonacci(-1)
-        
+
         with pytest.raises(ValueError, match="n must be a non-negative integer"):
             fibonacci(-10)
 
@@ -69,23 +71,23 @@ class TestFibonacciWithInfo:
         info = fibonacci_with_info(10)
         assert info["n"] == 10
         assert info["value"] == 55
-        assert info["is_even"] == False
+        assert info["is_even"] is False
         assert info["digits"] == 2
 
     def test_even_odd_detection(self):
         even_indices = [0, 3, 6, 9, 12, 15]
         for n in even_indices:
             info = fibonacci_with_info(n)
-            assert info["is_even"] == True, f"fibonacci({n}) should be even"
+            assert info["is_even"] is True, f"fibonacci({n}) should be even"
 
     def test_digit_count(self):
         test_cases = [
-            (5, 1),    # fib(5) = 5 (1 digit)
-            (10, 2),   # fib(10) = 55 (2 digits)
-            (20, 4),   # fib(20) = 6765 (4 digits)
-            (30, 6),   # fib(30) = 832040 (6 digits)
+            (5, 1),  # fib(5) = 5 (1 digit)
+            (10, 2),  # fib(10) = 55 (2 digits)
+            (20, 4),  # fib(20) = 6765 (4 digits)
+            (30, 6),  # fib(30) = 832040 (6 digits)
         ]
-        
+
         for n, expected_digits in test_cases:
             info = fibonacci_with_info(n)
             assert info["digits"] == expected_digits
@@ -94,36 +96,39 @@ class TestFibonacciWithInfo:
 class TestImplementation:
     def test_implementation_detection(self):
         impl = get_implementation()
-        assert impl in ["Python", "C++"], "Implementation should be either Python or C++"
+        assert impl in [
+            "Python",
+            "C++",
+        ], "Implementation should be either Python or C++"
         print(f"Current implementation: {impl}")
 
     def test_consistency_between_implementations(self):
         # Force Python implementation
         original_cpp = math_operations._cpp_available
-        
+
         try:
             # Test with Python
             math_operations._cpp_available = False
             python_results = {
                 "fib_10": fibonacci(10),
                 "seq_5": fibonacci_sequence(5),
-                "info_20": fibonacci_with_info(20)
+                "info_20": fibonacci_with_info(20),
             }
-            
+
             # Test with C++ if available
             if original_cpp:
                 math_operations._cpp_available = True
                 cpp_results = {
                     "fib_10": fibonacci(10),
                     "seq_5": fibonacci_sequence(5),
-                    "info_20": fibonacci_with_info(20)
+                    "info_20": fibonacci_with_info(20),
                 }
-                
+
                 # Compare results
                 assert python_results["fib_10"] == cpp_results["fib_10"]
                 assert python_results["seq_5"] == cpp_results["seq_5"]
                 assert python_results["info_20"] == cpp_results["info_20"]
-                
+
         finally:
             # Restore original state
             math_operations._cpp_available = original_cpp

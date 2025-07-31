@@ -1,5 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
+
 from main import app
 
 client = TestClient(app)
@@ -21,7 +22,7 @@ class TestAPIEndpoints:
             (10, 55),
             (20, 6765),
         ]
-        
+
         for n, expected in test_cases:
             response = client.get(f"/fibonacci/{n}")
             assert response.status_code == 200
@@ -42,7 +43,7 @@ class TestAPIEndpoints:
         data = response.json()
         assert data["n"] == 10
         assert data["value"] == 55
-        assert data["is_even"] == False
+        assert data["is_even"] is False
         assert data["digits"] == 2
 
     def test_status_endpoint(self):
@@ -82,21 +83,21 @@ class TestAPIErrorHandling:
 class TestAPIPerformance:
     def test_response_time_small_numbers(self):
         import time
-        
+
         start = time.time()
         response = client.get("/fibonacci/100")
         elapsed = time.time() - start
-        
+
         assert response.status_code == 200
         assert elapsed < 0.1  # Should respond in less than 100ms
 
     def test_response_time_large_numbers(self):
         import time
-        
+
         start = time.time()
         response = client.get("/fibonacci/1000")
         elapsed = time.time() - start
-        
+
         assert response.status_code == 200
         assert elapsed < 0.5  # Should respond in less than 500ms
 
